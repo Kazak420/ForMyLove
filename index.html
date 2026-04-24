@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для тебя ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0000 0%, #1a0000 100%);
+            font-family: 'Pacifico', cursive;
+            cursor: pointer;
+            height: 100vh;
+            position: relative;
+        }
+
+        #hint {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff85a2;
+            font-size: 28px;
+            z-index: 100;
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 133, 162, 0.8);
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .item {
+            position: absolute;
+            color: #ff3366;
+            pointer-events: none;
+            animation: moveUp linear forwards;
+            text-shadow: 0 0 15px rgba(255, 51, 102, 0.8);
+            white-space: pre;
+            line-height: 0.9;
+            text-align: center;
+            z-index: 1;
+        }
+
+        @keyframes moveUp {
+            0% {
+                transform: translateY(110vh) scale(0.8);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-20vh) scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff0040;
+            font-size: 30px;
+            pointer-events: none;
+            animation: floatHeart 4s ease-in forwards;
+            z-index: 1;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        #music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 51, 102, 0.3);
+            border: 2px solid #ff3366;
+            color: #ff85a2;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            z-index: 1000;
+            font-family: 'Pacifico', cursive;
+            transition: all 0.3s;
+        }
+
+        #music-control:hover {
+            background: rgba(255, 51, 102, 0.5);
+            transform: scale(1.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hint">💖 Нажми в любом месте 💖<br><small>чтобы заиграла музыка</small></div>
+
+    <button id="music-control" class="hidden" onclick="toggleMusic()">🎵 Музыка играет</button>
+
+    <audio id="bgMusic" loop>
+        <source src="music/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let isPlaying = false;
+        const audio = document.getElementById('bgMusic');
+        const hint = document.getElementById('hint');
+        const musicControl = document.getElementById('music-control');
+
+        function playMusic() {
+            if (isPlaying) return;
+            
+            audio.play().then(() => {
+                isPlaying = true;
+                hint.classList.add('hidden');
+                musicControl.classList.remove('hidden');
+            }).catch(error => {
+                console.error("Ошибка воспроизведения:", error);
+            });
+        }
+
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                musicControl.textContent = '🔇 Музыка на паузе';
+            } else {
+                audio.play();
+                musicControl.textContent = '🎵 Музыка играет';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // Клик по всему экрану
+        document.addEventListener('click', playMusic);
+        document.addEventListener('touchstart', playMusic, {passive: true});
+
+        // ASCII арт числа
+        const numberHearts = [
+            "  888  888  \n88888888888\n88888888888\n 888888888 \n  8888888  \n    888    \n     8     ",
+            "  222  222  \n22222222222\n 222222222 \n  2222222  \n    222    ",
+            "67" 
+        ];
+
+        const loveMessages = [
+            'Люблю тебя котик ❤️',
+            'Ты лучшее что было в моей жизни 💕',
+            'Скучаю по тебе 😘',
+            'Ты моё солнце 🌞',
+            'Обнимаю крепко 🤗',
+            'Целую 💋',
+            'Ты особенная ✨',
+            'Навсегда вместе 💑'
+        ];
+
+        function createItem() {
+            const el = document.createElement('div');
+            el.className = 'item';
+            const rand = Math.random();
+            
+            if (rand > 0.7) {
+                // Текстовое сообщение
+                const message = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+                el.innerText = message;
+                el.style.fontSize = Math.random() * 20 + 30 + 'px';
+                el.style.color = rand > 0.85 ? '#ff0040' : '#ff85a2';
+            } else {
+                // ASCII арт
+                const content = numberHearts[Math.floor(Math.random() * numberHearts.length)];
+                el.innerText = content;
+                el.style.fontSize = (content === "67") ? '60px' : '20px';
+                el.style.color = '#ff85a2';
+            }
+            
+            el.style.left = Math.random() * 90 + 5 + 'vw';
+            el.style.animationDuration = Math.random() * 3 + 4 + 's';
+            
+            document.body.appendChild(el);
+            
+            setTimeout(() => el.remove(), 7000);
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = Math.random() * 30 + 20 + 'px';
+            heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+            
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 5000);
+        }
+
+        // Запускаем генерацию элементов
+        setInterval(createItem, 300);
+        setInterval(createHeart, 500);
+    </script>
+</body>
+</html> 
